@@ -1,5 +1,6 @@
 from sys import stderr
 import time
+from warnings import warn
 
 def find_mount(adb, dev, node):
     for l in adb.check_output(('shell','mount')).splitlines():
@@ -55,7 +56,7 @@ def uevent_dict(adb, path):
         if not l:
             pass
         elif '=' not in l:
-            print( "WARNING: don't understand this line from %s: %s" % (repr(path), repr(l)), file=stderr )
+            warn("don't understand this line from %s: %s" % (repr(path), repr(l)), RuntimeWarning)
         else:
             k, v = l.split('=',1)
             d[k] = v
@@ -70,7 +71,7 @@ def fstab_dict(adb, path='/etc/fstab'):
         else:
             f = l.split()
             if len(f)<3:
-                print( "WARNING: don't understand this line from %s: %s" % (repr(path), repr(l)), file=stderr )
+                warn("don't understand this line from %s: %s" % (repr(path), repr(l)), RuntimeWarning)
             else:
                 # devname -> (mountpoint, fstype)
                 d[f[0]] = (f[1], f[2])

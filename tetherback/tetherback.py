@@ -14,6 +14,7 @@ from tabulate import tabulate
 from enum import Enum
 from hashlib import md5
 from collections import namedtuple, OrderedDict as odict
+from warnings import warn
 
 from .adb_wrapper import AdbWrapper
 from .adb_stuff import *
@@ -101,14 +102,14 @@ def check_TWRP(p, adb, force=False):
 
 def sensible_transport(transport, adbversion):
     if transport==adbxp.pipe_xo and adbversion<(1,0,32):
-        print("WARNING: exec-out pipe (--exec-out) won't work with ADB version < 1.0.32; changing to TCP", file=stderr)
+        warn("exec-out pipe (--exec-out) won't work with ADB version < 1.0.32; changing to TCP", RuntimeWarning)
         return adbxp.tcp
     elif transport==adbxp.pipe_bin:
         if adbversion>=(1,0,32):
-            print("WARNING: adb shell pipe (--pipe) not needed with ADB >= 1.0.32; changing to adb exec-out pipe", file=stderr)
+            warn("adb shell pipe (--pipe) not needed with ADB >= 1.0.32; changing to adb exec-out pipe", RuntimeWarning)
             return adbxp.pipe_xo
         elif sys.platform.startswith('linux'):
-            print("WARNING: adb shell pipe (--pipe) only works on Linux host; changing to TCP", file=stderr)
+            warn("adb shell pipe (--pipe) only works on Linux host; changing to TCP", RuntimeWarning)
             return adbxp.tcp
     elif transport is None:
         if adbversion>=(1,0,32):
